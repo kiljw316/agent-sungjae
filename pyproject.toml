@@ -1,0 +1,45 @@
+[project]
+name = "voice-cooking-assistant"
+version = "0.1.0"
+description = "MacBook voice-driven AI cooking assistant MVP (FastAPI server + push-to-talk CLI client)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.165,<1.0",
+    "uvicorn[standard]>=0.54",
+    "pydantic>=2.14,<3",
+    "pydantic-settings>=2.16",
+    "sqlalchemy>=2.1,<2.2",
+    "httpx>=0.28,<1.0",
+    "beautifulsoup4>=4.15",
+]
+
+[project.optional-dependencies]
+voice = [
+    "faster-whisper>=1.2.1",
+    # faster-whisper 1.2.1 calls av.open(..., metadata_errors=...), removed in PyAV 19 → pin below 19.
+    "av>=14,<19",
+    "sounddevice>=0.5.6",
+    "numpy>=2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["server", "client"]
+
+[tool.pytest.ini_options]
+testpaths = ["server/tests", "client/tests"]
+pythonpath = ["."]
+markers = [
+    "network: requires real internet access (run with --run-network)",
+    "voice: requires faster-whisper model download and macOS say (run with --run-voice)",
+]
+addopts = "-q"
